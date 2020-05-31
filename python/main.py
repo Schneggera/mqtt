@@ -209,18 +209,22 @@ def single(topic, payload=None, qos=0, retain=False, hostname="localhost",
 
 if __name__ == "__main__":
     while True:
+        # get user input from commandline
         print("Enter new temperature between -50 and 50: ")
         inp = input()
 
+        # exit programm
         if inp == 'exit':
             exit()
         
+        # check if user has typed in a valid value
         try:
             value = int(inp)
 
             if value < -50 or value > 50:
                 raise ValueError
 
+            # send publish message
             single(topic=TOPIC, payload=value, qos=2, hostname=HOST, client_id=CLIENTID)
         except ValueError:
             print('Not a valid temparature! Has to be a value between %d and %d' % (MIN_VALUE, MAX_VALUE))
