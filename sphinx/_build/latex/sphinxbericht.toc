@@ -1,0 +1,6 @@
+\babel@toc {ngerman}{}
+\contentsline {chapter}{\numberline {1}\sphinxstylestrong {Teammitglieder}}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Python}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Webpage}{3}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Wemos}{3}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Indices and tables}{5}{chapter.2}%

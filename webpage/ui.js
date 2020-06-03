@@ -15,7 +15,8 @@ Connect();
 function Connect(){
     mqttClient.connect({
     onSuccess: Connected,
-    onFailure: ConnectionFailed});
+    onFailure: ConnectionFailed,
+    useSSL: true});
 }
 
 function Connected() {
@@ -55,10 +56,10 @@ function MessageArrived(message) {
 }
 
 function Send(){
-    var low = document.getElementById('low').value;
-    var high = document.getElementById('high').value;
+    var low = parseInt(document.getElementById('low').value);
+    var high = parseInt(document.getElementById('high').value);
 
-    if(low>high){
+    if(low > high){
         alert('Low higher then High!')
     } else{
         var message = new Paho.MQTT.Message(low+';'+high);
