@@ -4,7 +4,7 @@ import time
 
 HOST = "test.mosquitto.org"
 CLIENTID = "mqttPaho"
-TOPIC = "/$_fluzzy$$cadabra/Nö/Temperature";
+TOPIC = "/$_fluzzy$$cadabra/Nö/Temperatur";
 MIN_VALUE = -50
 MAX_VALUE = 50
 
