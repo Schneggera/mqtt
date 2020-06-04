@@ -25,21 +25,17 @@ String clientId = "WeMos_";
 char* clientID_c_str = "1234567890123456789012345678";
 
 char msg[50];
-char msg1[50];
 int value = 0;
 long lastMsg = 0;
 long lastLoop = 0;
 long lastReconnect = 0;
 
-//actual temperatur
+//actual temperature
 int temp = 15;
       
-//get temperature limits
+//temperature limits
 int bottomLimit = 10;
 int upperLimit = 20;
-
-//get heater information (1=ON)
-bool heaterStatus = 1;
 
 // Connect to the WiFi
 WiFiClient espClient;
@@ -170,7 +166,7 @@ void loop() {
       
       Serial.print("Publish message: ");
       Serial.println(msg);
-      client.publish(topic2, msg, msg1);
+      client.publish(topic2, msg);
   }
 }
 
