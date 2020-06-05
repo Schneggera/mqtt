@@ -6,6 +6,7 @@ var clientId = "mqttJs";
 var port = 8081;
 clientId += new Date().getUTCMilliseconds();
 var subscription = "/$_fluzzy$$cadabra/Nö/Heizung";
+var subscription1 = "/$_fluzzy$$cadabra/Nö/WeMos";
 
 mqttClient = new Paho.MQTT.Client(hostname, port, clientId);
 mqttClient.onMessageArrived = MessageArrived;
@@ -22,7 +23,7 @@ function Connect() {
 
 function Connected() {
   console.log("Connected");
-  mqttClient.subscribe(subscription);
+  mqttClient.subscribe(subscription1);
 }
 
 function ConnectionFailed(res) {
@@ -39,21 +40,11 @@ function ConnectionLost(res) {
 /*Callback for incoming message processing */
 function MessageArrived(message) {
   console.log(message.destinationName + " : " + message.payloadString);
-  switch (message.payloadString) {
-    case "ON":
-      displayClass = "on";
-      break;
-    case "OFF":
-      displayClass = "off";
-      break;
-    default:
-      displayClass = "unknown";
-  }
-  var topic = message.destinationName.split("/");
-  if (topic.length == 3) {
-    var ioname = topic[1];
-    UpdateElement(ioname, displayClass);
-  }
+  let payloadArray = message.payloadString.split(';');
+  let temp = payloadArray[0];
+  let heater = payloadArray[1];
+  document.getElementById('status').innerHTML = 
+  `Status: Current Temperatur is ${temp} and heater is ${heater}`;
 }
 
 function Send() {
