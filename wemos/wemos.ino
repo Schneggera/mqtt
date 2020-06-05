@@ -173,15 +173,15 @@ void loop() {
       //if value below x than turn heater on
       if (temp < bottomLimit) {
         //snprintf (msg, 100, "Bottom Limit: %ld°C, Upper Limit: %ld°C, Current Temperature: %ld°C. Turn Heater ON.", bottomLimit, upperLimit, temp);
-        snprintf (msg, 20, "%ld;1",temp);
+        snprintf (msg, 20, "%ld;on;%ld;%ld",temp,bottomLimit,upperLimit);
       }
       else if (temp > upperLimit){
         //snprintf (msg, 100, "Bottom Limit: %ld°C, Upper Limit: %ld°C, Current Temperature: %ld°C. Turn Heater OFF.", bottomLimit, upperLimit, temp); 
-        snprintf (msg, 20, "%ld;0",temp);
+        snprintf (msg, 20, "%ld;off;%ld;%ld",temp,bottomLimit,upperLimit);
       }
       else {
         //snprintf (msg, 100, "Bottom Limit: %ld°C, Upper Limit: %ld°C, Current Temperature: %ld°C. Heater stays untouched.", bottomLimit, upperLimit, temp); 
-        snprintf (msg, 20, "%ld;2",temp);
+        snprintf (msg, 20, "%ld;untouched;%ld;%ld",temp,bottomLimit,upperLimit);
       }
       
       Serial.print("Publish message: ");
