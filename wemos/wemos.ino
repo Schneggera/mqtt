@@ -90,15 +90,32 @@ void callback(char* topic, byte* payload, unsigned int length) {
   //Convert temperatur
   if(strcmp(topic, "/$_fluzzy$$cadabra/Nö/Temperatur") == 0) {
     for (int i = 0; i < length; i++) {
-      if(i==0 && length > 1){           //double digit
-        temp = 10*(payload[i]-'0');
+
+      if(payload[0] != '-'){              //negativ values
+        if(i==0 && length > 1){           //double digit
+          temp = 10*(payload[i]-'0');
+        }
+        else if (i==0){                   //single digit
+          temp = (payload[i]-'0');
+        }
+        else{
+          temp = temp + payload[i]-'0';
+        }        
       }
-      else if (i==0){                   //single digit
-        temp = (payload[i]-'0');
+      else{                               //positive values
+        if(i==1 && length > 2){           //double digit
+          temp = 10*(payload[i]-'0');
+        }
+        else if (i==1){                   //single digit
+          temp = (payload[i]-'0');
+        }
+        else{
+          temp = temp + payload[i]-'0';
+        } 
       }
-      else{
-        temp = temp + payload[i]-'0';
-      }        
+    }
+    if(payload[0] == '-'){                //add minus in front of negativ value
+      temp = -temp;
     }
   }
 
