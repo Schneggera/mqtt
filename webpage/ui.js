@@ -44,7 +44,7 @@ function MessageArrived(message) {
   let temp = payloadArray[0];
   let heater = payloadArray[1];
   document.getElementById('status').innerHTML = 
-  `Status: Current Temperatur is ${temp} and heater is ${heater}`;
+  `Status: Current temperature is ${temp} and heater is ${heater}`;
 }
 
 function Send() {
