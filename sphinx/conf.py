@@ -58,32 +58,16 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 source_suffix = '.rst'
-
-# The master toctree document.
 master_doc = 'index'
+
+latex_elements = {
+'papersize': 'a4paper',
+'pointsize': '11pt',
+'preamble': '\setcounter{tocdepth}{2}',
+'classoptions': ',openany,oneside', 
+'babel' : '\\usepackage[ngerman]{babel}'
+}
 latex_documents = [
-    (master_doc, 'sphinxbericht.tex', 'sphinxbericht Documentation',
-     'Team 6', 'manual'),
-]
-
-
-# -- Options for manual page output ------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'sphinxbericht', 'sphinxbericht Documentation',
-     [author], 1)
-]
-
-
-# -- Options for Texinfo output ----------------------------------------------
-
-# Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
-#  dir menu entry, description, category)
-texinfo_documents = [
-    (master_doc, 'sphinxbericht', 'sphinxbericht Documentation',
-     author, 'sphinxbericht', 'One line description of project.',
-     'Miscellaneous'),
+  (master_doc, 'sphinxbericht.tex', u'MQTT Doku',
+   u'Tobias Reichel, Martin Neumann, Lukas Miller', 'manual'),
 ]

@@ -11,10 +11,6 @@ Welcome to MQTT's documentation!
 | Veranstaltung IOT (Prof. Dr. Volodymyr Brovkov)
 | Sommersemester 2020
 
-**Teammitglieder**
---------------------
-
-| Tobias Reichel, #2022398, INF6, <Tobias.Reichel@hs-augsburg.de>
 
 
 .. toctree::
@@ -22,20 +18,15 @@ Welcome to MQTT's documentation!
    :caption: Contents:
 
 
-Inhalt:
 
 .. toctree::
    :maxdepth: 2
    :numbered:
 
+   einleitung
    python
    webpage
    wemos
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
