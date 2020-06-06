@@ -12,6 +12,12 @@ Welcome to MQTT's documentation!
 | Sommersemester 2020
 
 
+**Teammitglieder**
+
+| Tobias Reichel, #2022398, INF6, <Tobias.Reichel@hs-augsburg.de
+
+
+
 
 .. toctree::
    :maxdepth: 2

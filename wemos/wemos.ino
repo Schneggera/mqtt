@@ -13,8 +13,8 @@
 #include <Wire.h>
 //#include <math.h>
 
-const char* ssid = "AP-MN";
-const char* password = "Martin#123";
+const char* ssid = "Tobias";
+const char* password = "tob123456!";
 //const char* mqtt_server = "mqtt.eclipse.org";     // :-)
 const char* mqtt_server = "test.mosquitto.org";     // :-)
 //const char* mqtt_server = "172.20.10.5";          // :-)

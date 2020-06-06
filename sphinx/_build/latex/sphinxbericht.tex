@@ -75,7 +75,7 @@
 \setcounter{tocdepth}{2}
 
 \title{MQTT Doku}
-\date{05.06.2020}
+\date{06.06.2020}
 \release{}
 \author{Tobias Reichel, Martin Neumann, Lukas Miller}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -103,22 +103,198 @@
 \item[] Sommersemester 2020
 \end{DUlineblock}
 
+\sphinxstylestrong{Teammitglieder}
 
-\chapter{Einleitung}
-\label{\detokenize{einleitung:einleitung}}\label{\detokenize{einleitung::doc}}
-
-\section{\sphinxstylestrong{Teammitglieder}}
-\label{\detokenize{einleitung:teammitglieder}}
 \begin{DUlineblock}{0em}
-\item[] Tobias Reichel, \#2022398, INF6, \textless{}\sphinxhref{mailto:Tobias.Reichel@hs-augsburg.de}{Tobias.Reichel@hs\sphinxhyphen{}augsburg.de}\textgreater{}
+\item[] Tobias Reichel, \#2022398, INF6, \textless{}\sphinxhref{mailto:Tobias.Reichel@hs-augsburg.de}{Tobias.Reichel@hs\sphinxhyphen{}augsburg.de}
 \end{DUlineblock}
+
+
+\chapter{Funktionsweise des Projekts}
+\label{\detokenize{einleitung:funktionsweise-des-projekts}}\label{\detokenize{einleitung::doc}}
+Temperaturen via Python
+Max Min via Website
+Wemos verarbeitet Daten und sendet zustand heizung an Website.
+
+Website läuft auf \sphinxurl{https://www.hs-augsburg.de/homes/schnecke/mqtt/}
+Git hier \sphinxurl{https://r-n-d.informatik.hs-augsburg.de:8080/schnecke/mqtt}
 
 
 \chapter{Python}
 \label{\detokenize{python:python}}\label{\detokenize{python::doc}}
 
-\chapter{Webpage}
-\label{\detokenize{webpage:webpage}}\label{\detokenize{webpage::doc}}
+\chapter{Publishing der Heizungslimits mittels Javascript}
+\label{\detokenize{webpage:publishing-der-heizungslimits-mittels-javascript}}\label{\detokenize{webpage::doc}}
+
+\section{Grundlagen}
+\label{\detokenize{webpage:grundlagen}}
+Als Publisher für die Heizungslimits wurde eine Website mittels Javascript und
+HTML5 erstellt.
+
+Als MQTT\sphinxhyphen{}Implementierung wurde Eclipse Paho für verwendet. Dieses wird über
+\sphinxurl{https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js}
+bereitgestellt. Man bindet die Implementierung im HTML mittels eines
+\sphinxcode{\sphinxupquote{script}}\sphinxhyphen{}Tags ein. Als zweites Script wurde im HTML das \sphinxcode{\sphinxupquote{ui.js}} importiert,
+welches die Werte published sowie den Werten subscriped, welches das WEMOS Modul
+sendet.
+
+
+\section{HTML}
+\label{\detokenize{webpage:html}}
+Als Benutzeroberfläche wurde eine sehr einfache Website erzeugt. Diese Website
+enthält zwei Regler, mit welchen die mindest und maximal Temperatur gesetzt
+werden kann. Außerdem gibt es einen Button, der das Senden der Werte ermöglicht,
+und eine Fläche, um die Informationen über den Zustand der Heizung, welche vom
+WEMOS Modul übertragen werden, darzustellen.
+
+Auf der Oberfläche ist es möglich, den maximal Wert niedriger als den minimal
+Wert zu setzen, beim Absenden der Werte wird aber eine Fehlermeldung angezeigt
+und die Werte nicht gesendet.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZlt{}!DOCTYPE html\PYGZgt{}}
+\PYG{p}{\PYGZlt{}}\PYG{n+nt}{html} \PYG{n+na}{lang}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}en\PYGZdq{}}\PYG{p}{\PYGZgt{}}
+  \PYG{p}{\PYGZlt{}}\PYG{n+nt}{head}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{script}
+      \PYG{n+na}{src}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}https://cdnjs.cloudflare.com/ajax/libs/paho\PYGZhy{}mqtt/1.0.1/mqttws31.js\PYGZdq{}}
+      \PYG{n+na}{type}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}text/javascript\PYGZdq{}}
+    \PYG{p}{\PYGZgt{}}\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{script}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{script} \PYG{n+na}{src}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}ui.js\PYGZdq{}} \PYG{n+na}{type}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}text/javascript\PYGZdq{}} \PYG{n+na}{defer}\PYG{p}{\PYGZgt{}}\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{script}\PYG{p}{\PYGZgt{}}
+
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{meta} \PYG{n+na}{charset}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}utf\PYGZhy{}8\PYGZdq{}} \PYG{p}{/}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{meta} \PYG{n+na}{charset}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}UTF\PYGZhy{}8\PYGZdq{}} \PYG{p}{/}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{meta} \PYG{n+na}{name}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}viewport\PYGZdq{}} \PYG{n+na}{content}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}width=device\PYGZhy{}width, initial\PYGZhy{}scale=1.0\PYGZdq{}} \PYG{p}{/}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{title}\PYG{p}{\PYGZgt{}}MQTT\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{title}\PYG{p}{\PYGZgt{}}
+  \PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{head}\PYG{p}{\PYGZgt{}}
+  \PYG{p}{\PYGZlt{}}\PYG{n+nt}{body}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}Temperature low:\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{input} \PYG{n+na}{id}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}low\PYGZdq{}} \PYG{n+na}{type}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}range\PYGZdq{}} \PYG{n+na}{min}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}1\PYGZdq{}} \PYG{n+na}{max}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}40\PYGZdq{}} \PYG{n+na}{onchange}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}DragEnd()\PYGZdq{}}\PYG{p}{/}\PYG{p}{\PYGZgt{}}
+
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}Temperature high:\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{input} \PYG{n+na}{id}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}high\PYGZdq{}} \PYG{n+na}{type}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}range\PYGZdq{}} \PYG{n+na}{min}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}1\PYGZdq{}} \PYG{n+na}{max}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}40\PYGZdq{}} \PYG{n+na}{onchange}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}DragEnd()\PYGZdq{}}\PYG{p}{/}\PYG{p}{\PYGZgt{}}
+
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p} \PYG{n+na}{id}\PYG{o}{=}\PYG{l+s}{\PYGZsq{}lblLow\PYGZsq{}}\PYG{p}{\PYGZgt{}}Low:\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p} \PYG{n+na}{id}\PYG{o}{=}\PYG{l+s}{\PYGZsq{}lblHigh\PYGZsq{}}\PYG{p}{\PYGZgt{}}High:\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}    
+
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}\PYG{p}{\PYGZlt{}}\PYG{n+nt}{button} \PYG{n+na}{onclick}\PYG{o}{=}\PYG{l+s}{\PYGZdq{}Send()\PYGZdq{}}\PYG{p}{\PYGZgt{}}Send\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{button}\PYG{p}{\PYGZgt{}}\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}
+
+    \PYG{p}{\PYGZlt{}}\PYG{n+nt}{p} \PYG{n+na}{id}\PYG{o}{=}\PYG{l+s}{\PYGZsq{}status\PYGZsq{}}\PYG{p}{\PYGZgt{}}\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{p}\PYG{p}{\PYGZgt{}}
+  \PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{body}\PYG{p}{\PYGZgt{}}
+\PYG{p}{\PYGZlt{}}\PYG{p}{/}\PYG{n+nt}{html}\PYG{p}{\PYGZgt{}}
+\end{sphinxVerbatim}
+
+Nachfolgenden sieht man ein Screenshot, wie die Website im Betrieb aussieht.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{webpage}.png}
+\caption{Website sendet und empfängt Daten vom Broker}\label{\detokenize{webpage:id1}}\end{figure}
+
+
+\section{Javascript}
+\label{\detokenize{webpage:javascript}}
+Als Broker wurder \sphinxcode{\sphinxupquote{test.mosquitto.org}} verwendet. Es konnte aber nicht der
+unverschlüsselte Port 1883 benutzt werden, sondern der für WebSockets
+vorbereitete verschlüsselte Port 8081.
+
+Es gibt Funktionen, um sich mit dem Broker zu verbinden und im Fall des
+Verbindungsverlust eine neue Verbindung aufzubauen. Außerdem gibt es Funktionen,
+um die Werte bevor sie an den Broker gesendet werden aufzubereitet, sowie eine
+Funktion, um auf eingehende Nachrichten vom WEMOS zu reagieren und im HTML
+anzuzeigen.
+
+In der Funktion \sphinxcode{\sphinxupquote{send()}} wird zudem überprüft, ob der maximal Wert niedriger
+als der minimal Wert ist und dem entsprechend eine Fehlermeldung ausgegeben. Die
+Werte werden an den Broker im Format \sphinxcode{\sphinxupquote{low;high}} übertragen. Einstellige
+Temperaturen werden mit führenden Nullen aufgefüllt.
+
+Eingehende Nachrichten vom WEMOS werden in Temperatur und Zustand der Heizung
+gesplitted und im HTML angezeigt. Da das WEMOS Modul den Zustand der Heizung mit
+\sphinxcode{\sphinxupquote{on}}, \sphinxcode{\sphinxupquote{off}} und \sphinxcode{\sphinxupquote{untouched}} überträgt, können die Werte direkt in den
+String, welcher im HTML angezeigt wird eingebaut werden.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+cm}{/*}
+\PYG{c+cm}{ * MQTT\PYGZhy{}WebClient example for Web\PYGZhy{}IO 4.0}
+\PYG{c+cm}{ */}
+\PYG{k+kd}{var} \PYG{n+nx}{hostname} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}test.mosquitto.org\PYGZdq{}}\PYG{p}{;}
+\PYG{k+kd}{var} \PYG{n+nx}{clientId} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}mqttJs\PYGZdq{}}\PYG{p}{;}
+\PYG{k+kd}{var} \PYG{n+nx}{port} \PYG{o}{=} \PYG{l+m+mi}{8081}\PYG{p}{;}
+\PYG{n+nx}{clientId} \PYG{o}{+=} \PYG{k}{new} \PYG{n+nb}{Date}\PYG{p}{(}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{getUTCMilliseconds}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+\PYG{k+kd}{var} \PYG{n+nx}{subscription} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/\PYGZdl{}\PYGZus{}fluzzy\PYGZdl{}\PYGZdl{}cadabra/Nö/Heizung\PYGZdq{}}\PYG{p}{;}
+\PYG{k+kd}{var} \PYG{n+nx}{subscription1} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/\PYGZdl{}\PYGZus{}fluzzy\PYGZdl{}\PYGZdl{}cadabra/Nö/WeMos\PYGZdq{}}\PYG{p}{;}
+
+\PYG{n+nx}{mqttClient} \PYG{o}{=} \PYG{k}{new} \PYG{n+nx}{Paho}\PYG{p}{.}\PYG{n+nx}{MQTT}\PYG{p}{.}\PYG{n+nx}{Client}\PYG{p}{(}\PYG{n+nx}{hostname}\PYG{p}{,} \PYG{n+nx}{port}\PYG{p}{,} \PYG{n+nx}{clientId}\PYG{p}{)}\PYG{p}{;}
+\PYG{n+nx}{mqttClient}\PYG{p}{.}\PYG{n+nx}{onMessageArrived} \PYG{o}{=} \PYG{n+nx}{MessageArrived}\PYG{p}{;}
+\PYG{n+nx}{mqttClient}\PYG{p}{.}\PYG{n+nx}{onConnectionLost} \PYG{o}{=} \PYG{n+nx}{ConnectionLost}\PYG{p}{;}
+\PYG{n+nx}{Connect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+
+\PYG{k+kd}{function} \PYG{n+nx}{Connect}\PYG{p}{(}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{mqttClient}\PYG{p}{.}\PYG{n+nx}{connect}\PYG{p}{(}\PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{onSuccess}\PYG{o}{:} \PYG{n+nx}{Connected}\PYG{p}{,}
+    \PYG{n+nx}{onFailure}\PYG{o}{:} \PYG{n+nx}{ConnectionFailed}\PYG{p}{,}
+    \PYG{n+nx}{useSSL}\PYG{o}{:} \PYG{k+kc}{true}\PYG{p}{,}
+  \PYG{p}{\PYGZcb{}}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{Connected}\PYG{p}{(}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{log}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Connected\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+  \PYG{n+nx}{mqttClient}\PYG{p}{.}\PYG{n+nx}{subscribe}\PYG{p}{(}\PYG{n+nx}{subscription1}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{ConnectionFailed}\PYG{p}{(}\PYG{n+nx}{res}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{log}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Connect failed:\PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{errorMessage}\PYG{p}{)}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{ConnectionLost}\PYG{p}{(}\PYG{n+nx}{res}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{errorCode} \PYG{o}{!==} \PYG{l+m+mi}{0}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{log}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Connection lost:\PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{res}\PYG{p}{.}\PYG{n+nx}{errorMessage}\PYG{p}{)}\PYG{p}{;}
+    \PYG{n+nx}{Connect}\PYG{p}{(}\PYG{p}{)}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+cm}{/*Callback for incoming message processing */}
+\PYG{k+kd}{function} \PYG{n+nx}{MessageArrived}\PYG{p}{(}\PYG{n+nx}{message}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{n+nx}{console}\PYG{p}{.}\PYG{n+nx}{log}\PYG{p}{(}\PYG{n+nx}{message}\PYG{p}{.}\PYG{n+nx}{destinationName} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{} : \PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{message}\PYG{p}{.}\PYG{n+nx}{payloadString}\PYG{p}{)}\PYG{p}{;}
+  \PYG{k+kd}{let} \PYG{n+nx}{payloadArray} \PYG{o}{=} \PYG{n+nx}{message}\PYG{p}{.}\PYG{n+nx}{payloadString}\PYG{p}{.}\PYG{n+nx}{split}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{};\PYGZsq{}}\PYG{p}{)}\PYG{p}{;}
+  \PYG{k+kd}{let} \PYG{n+nx}{temp} \PYG{o}{=} \PYG{n+nx}{payloadArray}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{;}
+  \PYG{k+kd}{let} \PYG{n+nx}{heater} \PYG{o}{=} \PYG{n+nx}{payloadArray}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{;}
+  \PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}status\PYGZsq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{innerHTML} \PYG{o}{=} 
+  \PYG{l+s+sb}{`}\PYG{l+s+sb}{Status: Current temperature is }\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{temp}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{ and heater is }\PYG{l+s+si}{\PYGZdl{}\PYGZob{}}\PYG{n+nx}{heater}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+sb}{`}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{Send}\PYG{p}{(}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{let} \PYG{n+nx}{low} \PYG{o}{=} \PYG{n+nb}{parseInt}\PYG{p}{(}\PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}low\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{)}\PYG{p}{;}
+  \PYG{k+kd}{let} \PYG{n+nx}{high} \PYG{o}{=} \PYG{n+nb}{parseInt}\PYG{p}{(}\PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}high\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{)}\PYG{p}{;}
+
+  \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{low} \PYG{o}{\PYGZgt{}} \PYG{n+nx}{high}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{n+nx}{alert}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Low higher then High!\PYGZdq{}}\PYG{p}{)}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}}
+    \PYG{k+kd}{var} \PYG{n+nx}{message} \PYG{o}{=} \PYG{k}{new} \PYG{n+nx}{Paho}\PYG{p}{.}\PYG{n+nx}{MQTT}\PYG{p}{.}\PYG{n+nx}{Message}\PYG{p}{(}
+      \PYG{n+nx}{PadZero}\PYG{p}{(}\PYG{n+nx}{low}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{};\PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{PadZero}\PYG{p}{(}\PYG{n+nx}{high}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)}
+    \PYG{p}{)}\PYG{p}{;}
+    \PYG{n+nx}{message}\PYG{p}{.}\PYG{n+nx}{destinationName} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/\PYGZdl{}\PYGZus{}fluzzy\PYGZdl{}\PYGZdl{}cadabra/Nö/Heizung\PYGZdq{}}\PYG{p}{;}
+    \PYG{n+nx}{mqttClient}\PYG{p}{.}\PYG{n+nx}{send}\PYG{p}{(}\PYG{n+nx}{message}\PYG{p}{)}\PYG{p}{;}
+  \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{DragEnd}\PYG{p}{(}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{let} \PYG{n+nx}{low} \PYG{o}{=} \PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}low\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{;}
+  \PYG{k+kd}{let} \PYG{n+nx}{high} \PYG{o}{=} \PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}high\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{value}\PYG{p}{;}
+
+  \PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}lblLow\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{innerText} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}Low: \PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{low}\PYG{p}{;}
+  \PYG{n+nb}{document}\PYG{p}{.}\PYG{n+nx}{getElementById}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}lblHigh\PYGZdq{}}\PYG{p}{)}\PYG{p}{.}\PYG{n+nx}{innerText} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}High: \PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{high}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kd}{function} \PYG{n+nx}{PadZero}\PYG{p}{(}\PYG{n+nx}{n}\PYG{p}{,} \PYG{n+nx}{size}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+  \PYG{k+kd}{let} \PYG{n+nx}{s} \PYG{o}{=} \PYG{n+nx}{n} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{;}
+  \PYG{k}{while} \PYG{p}{(}\PYG{n+nx}{s}\PYG{p}{.}\PYG{n+nx}{length} \PYG{o}{\PYGZlt{}} \PYG{n+nx}{size}\PYG{p}{)} \PYG{n+nx}{s} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}0\PYGZdq{}} \PYG{o}{+} \PYG{n+nx}{s}\PYG{p}{;}
+  \PYG{k}{return} \PYG{n+nx}{s}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
 
 \chapter{Wemos}
 \label{\detokenize{wemos:wemos}}\label{\detokenize{wemos::doc}}
