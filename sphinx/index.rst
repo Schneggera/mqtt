@@ -7,7 +7,7 @@ Welcome to MQTT's documentation!
 ================================
 
 | Hochschule Augsburg
-| Fakultät für Informatik
+| FakultÃ¤t fÃ¼r Informatik
 | Veranstaltung IOT (Prof. Dr. Volodymyr Brovkov)
 | Sommersemester 2020
 

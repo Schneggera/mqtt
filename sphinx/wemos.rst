@@ -137,19 +137,19 @@ Testing
 Nachfolgend ist ein Versuchsaufbau in MQTTBOX dargestellt, der die Kommunikation
 der einzelnen Komponenten (Website, Pythonanwendung und Wemos-Modul) aufzeigt.
 
-.. figure:: /img/mqtt-connection.png
+.. figure:: ../img/mqtt-connection.png
     :name: MQTT Connection
     :alt: MQTT Connection
 
     MQTT Connection
 
-.. figure:: /img/mqtt-subscriber.png
+.. figure:: ../img/mqtt-subscriber.png
     :name: MQTT Subscriber Overview
     :alt: MQTT Subscriber Overview
 
     MQTT Subscriber Übersicht
 
-.. figure:: /img/mqtt-test.png
+.. figure:: ../img/mqtt-test.png
     :name: MQTT Test
     :alt: MQTT Test
 

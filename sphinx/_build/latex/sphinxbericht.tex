@@ -75,7 +75,7 @@
 \setcounter{tocdepth}{2}
 
 \title{MQTT Doku}
-\date{06.06.2020}
+\date{08.06.2020}
 \release{}
 \author{Tobias Reichel, Martin Neumann, Lukas Miller}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -107,6 +107,8 @@
 
 \begin{DUlineblock}{0em}
 \item[] Tobias Reichel, \#2022398, INF6, \textless{}\sphinxhref{mailto:Tobias.Reichel@hs-augsburg.de}{Tobias.Reichel@hs\sphinxhyphen{}augsburg.de}
+\item[] Martin Neumann, \#2026143, INF6, \textless{}\sphinxhref{mailto:Martin.Neumann1@hs-augsburg.de}{Martin.Neumann1@hs\sphinxhyphen{}augsburg.de}
+\item[] Lukas Miller, \#, INF6, \textless{}\sphinxhref{mailto:Lukas.Miller@hs-augsburg.de}{Lukas.Miller@hs\sphinxhyphen{}augsburg.de}
 \end{DUlineblock}
 
 
@@ -298,6 +300,164 @@ String, welcher im HTML angezeigt wird eingebaut werden.
 
 \chapter{Wemos}
 \label{\detokenize{wemos:wemos}}\label{\detokenize{wemos::doc}}
+
+\section{Voraussetzungen}
+\label{\detokenize{wemos:voraussetzungen}}
+Die Hardware besteht aus einem \sphinxstylestrong{IZOKEE ES8266 WIFI Modul}. Per MicroUSB
+ist das Modul mit einem Notebook verbunden worden. Zusätzlich wurde ein WLAN
+in Form eines Hotspots erstellt, welches im Rahmen des Projekts als
+Kommunikationsweg mit einem MQTT\sphinxhyphen{}Broker dient.
+
+Programmiert wurde mittels einer Arduino\sphinxhyphen{}Oberfläche in der Sprache C. Die
+Testumgebung bestand aus einer MQTTBox.
+
+
+\section{Vorlage}
+\label{\detokenize{wemos:vorlage}}
+Als Vorlage der umgesetzen Projektarbeit dient das bereits in der Vorlesung
+besprochene „WeMosMQTTSubPub\_Projekt5“. Einzelne Codeabschnitte konnten
+hierfür verwendet werden und mussten nicht mehr selbst implementiert werden.
+
+
+\section{Implementierung}
+\label{\detokenize{wemos:implementierung}}
+
+\subsection{Konfiguration Connection}
+\label{\detokenize{wemos:konfiguration-connection}}
+WLAN Konfiguration
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+const char* \PYG{n+nv}{ssid} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}SSID\PYGZdq{}}\PYG{p}{;}
+const char* \PYG{n+nv}{password} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}PASSWORD\PYGZdq{}}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+MQTT Konfiguration
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+const char* \PYG{n+nv}{mqtt\PYGZus{}server} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}test.mosquitto.org\PYGZdq{}}\PYG{p}{;}
+const char* \PYG{n+nv}{topic0} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/}\PYG{n+nv}{\PYGZdl{}\PYGZus{}fluzzy}\PYG{n+nv}{\PYGZdl{}\PYGZdl{}}\PYG{l+s+s2}{cadabra/Nö/Heizung}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{;}
+const char* \PYG{n+nv}{topic1} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/}\PYG{n+nv}{\PYGZdl{}\PYGZus{}fluzzy}\PYG{n+nv}{\PYGZdl{}\PYGZdl{}}\PYG{l+s+s2}{cadabra/Nö/Temperatur}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{;}
+const char* \PYG{n+nv}{topic2} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/}\PYG{n+nv}{\PYGZdl{}\PYGZus{}fluzzy}\PYG{n+nv}{\PYGZdl{}\PYGZdl{}}\PYG{l+s+s2}{cadabra/Nö/WeMos}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{;}
+String \PYG{n+nv}{clientId} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}WeMos\PYGZus{}\PYGZdq{}}\PYG{p}{;}
+char* \PYG{n+nv}{clientID\PYGZus{}c\PYGZus{}str} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}1234567890123456789012345678\PYGZdq{}}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+
+\subsection{Startwerte definieren}
+\label{\detokenize{wemos:startwerte-definieren}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+//actual temperature
+int \PYG{n+nv}{temp} \PYG{o}{=} \PYG{l+m}{15}\PYG{p}{;}
+
+//temperature limits
+int \PYG{n+nv}{bottomLimit} \PYG{o}{=} \PYG{l+m}{10}\PYG{p}{;}
+int \PYG{n+nv}{upperLimit} \PYG{o}{=} \PYG{l+m}{20}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+
+\subsection{Callback Function}
+\label{\detokenize{wemos:callback-function}}
+Konvertierung der Grenzen der Heizung (Input der Webanwendung)
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{if}\PYG{o}{(}strcmp\PYG{o}{(}topic, \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/}\PYG{n+nv}{\PYGZdl{}\PYGZus{}fluzzy}\PYG{n+nv}{\PYGZdl{}\PYGZdl{}}\PYG{l+s+s2}{cadabra/Nö/Heizung}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{)} \PYG{o}{=}\PYG{o}{=} \PYG{l+m}{0}\PYG{o}{)} \PYG{o}{\PYGZob{}}
+    \PYG{n+nv}{bottomLimit} \PYG{o}{=} \PYG{l+m}{10}*\PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{0}\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)} + \PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{1}\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+    \PYG{n+nv}{upperLimit} \PYG{o}{=} \PYG{l+m}{10}*\PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{3}\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)} + \PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{4}\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+\PYG{o}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+Konvertierung der aktuellen Temperatur (Input der Pythonanwendung)
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{if}\PYG{o}{(}strcmp\PYG{o}{(}topic, \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{/}\PYG{n+nv}{\PYGZdl{}\PYGZus{}fluzzy}\PYG{n+nv}{\PYGZdl{}\PYGZdl{}}\PYG{l+s+s2}{cadabra/Nö/Temperatur}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{)} \PYG{o}{=}\PYG{o}{=} \PYG{l+m}{0}\PYG{o}{)} \PYG{o}{\PYGZob{}}
+    \PYG{k}{for} \PYG{o}{(}int \PYG{n+nv}{i} \PYG{o}{=} \PYG{l+m}{0}\PYG{p}{;} i \PYGZlt{} length\PYG{p}{;} i++\PYG{o}{)} \PYG{o}{\PYGZob{}}
+
+        \PYG{k}{if}\PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{0}\PYG{o}{]} !\PYG{o}{=} \PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZsq{}}\PYG{o}{)}\PYG{o}{\PYGZob{}}                //negativ values
+            \PYG{k}{if}\PYG{o}{(}\PYG{n+nv}{i}\PYG{o}{=}\PYG{o}{=}\PYG{l+m}{0} \PYG{o}{\PYGZam{}\PYGZam{}} length \PYGZgt{} \PYG{l+m}{1}\PYG{o}{)}\PYG{o}{\PYGZob{}}           //double digit
+                \PYG{n+nv}{temp} \PYG{o}{=} \PYG{l+m}{10}*\PYG{o}{(}payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+            \PYG{k}{else} \PYG{k}{if} \PYG{o}{(}\PYG{n+nv}{i}\PYG{o}{=}\PYG{o}{=}\PYG{l+m}{0}\PYG{o}{)}\PYG{o}{\PYGZob{}}                   //single digit
+                \PYG{n+nv}{temp} \PYG{o}{=} \PYG{o}{(}payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+            \PYG{k}{else}\PYG{o}{\PYGZob{}}
+                \PYG{n+nv}{temp} \PYG{o}{=} temp + payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+        \PYG{o}{\PYGZcb{}}
+        \PYG{k}{else}\PYG{o}{\PYGZob{}}                                 //positive values
+            \PYG{k}{if}\PYG{o}{(}\PYG{n+nv}{i}\PYG{o}{=}\PYG{o}{=}\PYG{l+m}{1} \PYG{o}{\PYGZam{}\PYGZam{}} length \PYGZgt{} \PYG{l+m}{2}\PYG{o}{)}\PYG{o}{\PYGZob{}}           //double digit
+                \PYG{n+nv}{temp} \PYG{o}{=} \PYG{l+m}{10}*\PYG{o}{(}payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+            \PYG{k}{else} \PYG{k}{if} \PYG{o}{(}\PYG{n+nv}{i}\PYG{o}{=}\PYG{o}{=}\PYG{l+m}{1}\PYG{o}{)}\PYG{o}{\PYGZob{}}                   //single digit
+                \PYG{n+nv}{temp} \PYG{o}{=} \PYG{o}{(}payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{o}{)}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+            \PYG{k}{else}\PYG{o}{\PYGZob{}}
+                \PYG{n+nv}{temp} \PYG{o}{=} temp + payload\PYG{o}{[}i\PYG{o}{]}\PYGZhy{}\PYG{l+s+s1}{\PYGZsq{}0\PYGZsq{}}\PYG{p}{;}
+            \PYG{o}{\PYGZcb{}}
+        \PYG{o}{\PYGZcb{}}
+    \PYG{o}{\PYGZcb{}}
+    \PYG{k}{if}\PYG{o}{(}payload\PYG{o}{[}\PYG{l+m}{0}\PYG{o}{]} \PYG{o}{=}\PYG{o}{=} \PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZsq{}}\PYG{o}{)}\PYG{o}{\PYGZob{}}                    //add minus in front of negativ value
+        \PYG{n+nv}{temp} \PYG{o}{=} \PYGZhy{}temp\PYG{p}{;}
+    \PYG{o}{\PYGZcb{}}
+\PYG{o}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+
+\subsection{Verbindungsaufbau}
+\label{\detokenize{wemos:verbindungsaufbau}}
+Anbindung an die richtigen Subscriber und Publisher
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+client.publish\PYG{o}{(}topic2, \PYG{l+s+s2}{\PYGZdq{}hello world\PYGZdq{}}\PYG{o}{)}\PYG{p}{;}
+client.subscribe\PYG{o}{(}topic0\PYG{o}{)}\PYG{p}{;}
+client.subscribe\PYG{o}{(}topic1\PYG{o}{)}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+
+\subsection{Abfrageroutine}
+\label{\detokenize{wemos:abfrageroutine}}
+Auswertung der aktuellen Temperatur alle 5 Sekunden
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k}{if} \PYG{o}{(}temp \PYGZlt{} bottomLimit\PYG{o}{)} \PYG{o}{\PYGZob{}}
+    snprintf \PYG{o}{(}msg, \PYG{l+m}{20}, \PYG{l+s+s2}{\PYGZdq{}\PYGZpc{}ld;on;\PYGZpc{}ld;\PYGZpc{}ld\PYGZdq{}},temp,bottomLimit,upperLimit\PYG{o}{)}\PYG{p}{;}
+  \PYG{o}{\PYGZcb{}}
+  \PYG{k}{else} \PYG{k}{if} \PYG{o}{(}temp \PYGZgt{} upperLimit\PYG{o}{)}\PYG{o}{\PYGZob{}}
+    snprintf \PYG{o}{(}msg, \PYG{l+m}{20}, \PYG{l+s+s2}{\PYGZdq{}\PYGZpc{}ld;off;\PYGZpc{}ld;\PYGZpc{}ld\PYGZdq{}},temp,bottomLimit,upperLimit\PYG{o}{)}\PYG{p}{;}
+  \PYG{o}{\PYGZcb{}}
+  \PYG{k}{else} \PYG{o}{\PYGZob{}}
+    snprintf \PYG{o}{(}msg, \PYG{l+m}{20}, \PYG{l+s+s2}{\PYGZdq{}\PYGZpc{}ld;untouched;\PYGZpc{}ld;\PYGZpc{}ld\PYGZdq{}},temp,bottomLimit,upperLimit\PYG{o}{)}\PYG{p}{;}
+  \PYG{o}{\PYGZcb{}}
+
+  client.publish\PYG{o}{(}topic2, msg\PYG{o}{)}\PYG{p}{;}
+\end{sphinxVerbatim}
+
+
+\section{Testing}
+\label{\detokenize{wemos:testing}}
+Nachfolgend ist ein Versuchsaufbau in MQTTBOX dargestellt, der die Kommunikation
+der einzelnen Komponenten (Website, Pythonanwendung und Wemos\sphinxhyphen{}Modul) aufzeigt.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{mqtt-connection}.png}
+\caption{MQTT Connection}\label{\detokenize{wemos:mqtt-connection}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{mqtt-subscriber}.png}
+\caption{MQTT Subscriber Übersicht}\label{\detokenize{wemos:mqtt-subscriber-overview}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{mqtt-test}.png}
+\caption{MQTT Abfrage Beispiel}\label{\detokenize{wemos:mqtt-test}}\end{figure}
+
 
 
 \renewcommand{\indexname}{Stichwortverzeichnis}
