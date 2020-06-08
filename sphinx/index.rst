@@ -7,7 +7,7 @@ Welcome to MQTT's documentation!
 ================================
 
 | Hochschule Augsburg
-| FakultÃ¤t fÃ¼r Informatik
+| Fakultät für Informatik
 | Veranstaltung IOT (Prof. Dr. Volodymyr Brovkov)
 | Sommersemester 2020
 
@@ -15,7 +15,8 @@ Welcome to MQTT's documentation!
 **Teammitglieder**
 
 | Tobias Reichel, #2022398, INF6, <Tobias.Reichel@hs-augsburg.de
-
+| Martin Neumann, #2026143, INF6, <Martin.Neumann1@hs-augsburg.de
+| Lukas Miller, #, INF6, <Lukas.Miller@hs-augsburg.de
 
 
 
