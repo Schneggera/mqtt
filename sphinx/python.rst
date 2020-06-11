@@ -63,3 +63,5 @@ Bei einem falschem Wert wird der User benachrichtigt das der Wert ungültig ist.
     100
     Not a valid temparature! Has to be a value between -50 and 50
     Enter new temperature between -50 and 50:
+
+Mit dem Befehl `exit` kann die Anwendung beendet werden.
