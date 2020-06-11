@@ -45,6 +45,7 @@ def _on_publish(c, userdata, mid):
     """Internal callback"""
     if len(userdata) == 0:
         c.disconnect()
+        print("Temperature published!")
     else:
         _do_publish(c)
 
@@ -229,4 +230,4 @@ if __name__ == "__main__":
         except ValueError:
             print('Not a valid temparature! Has to be a value between %d and %d' % (MIN_VALUE, MAX_VALUE))
             
-        time.sleep(2)
+        time.sleep(1)
